@@ -49,4 +49,5 @@ router.get('/:tasteType', async (req, res) => {
   }
 });
 
+//Export router so it can be used in server.js file
 module.exports = router;
