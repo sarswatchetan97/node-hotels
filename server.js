@@ -128,6 +128,7 @@ const menuItemRoutes = require('./routes/menuItemRoutes');
 app.use('/person', personRoutes);
 app.use('/menu', menuItemRoutes);
 
+//const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
   console.log('Server is listiening on 3000');
