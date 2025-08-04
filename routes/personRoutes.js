@@ -33,8 +33,57 @@ router.post('/signup', async (req, res) => {  //creating usecase of signup endpo
 
 });
 
+//Login Route
+router.post('/login', async (req, res) => {
+  try {
+    //Extract username and password from request body
+    const {username, password} = req.body;
+
+    //Find the user by username
+    const user = await Person.findOne({username: username});
+
+    //If user doesn't exit or password doesn't match return error
+    if (!user || !(await user.comparePassword(password))) {
+      return res.status(401).json({error: 'Invalid username or password'});
+    }
+
+    //generate Token
+
+    const payload = {
+      id: user.id,
+      username: user.username
+    }
+
+    const token = generateToken(payload);
+
+    //return token as response
+    res.json({token});
+    
+  }catch(err) {
+    console.log(err);
+    res.status(500).json({error: 'Internal Server Error'});
+  }
+})
+
+//profile endpoint
+router.get('/profile', jwtAuthMiddleware, async (req, res) => {
+  try {
+    const userData = req.userPayload;
+    console.log("User Data: ", userData);
+
+    const userId = userData.id;
+    const user = await Person.findById(userId);
+
+    res.status(200).json({user});
+
+  } catch(err) {
+    console.log(err);
+    res.status(500).json({error: "Internal Server Error"});
+  }
+})
+
 //Get method to get Person data
-router.get('/', async (req, res) => {
+router.get('/', jwtAuthMiddleware, async (req, res) => {
   try {
     const data = await Person.find();
     console.log('data fetched');
